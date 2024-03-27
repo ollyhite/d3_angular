@@ -8,15 +8,13 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'app-chart1',
-  templateUrl: './chart1.component.html',
-  styleUrl: './chart1.component.scss',
+  selector: 'app-chart2',
+  templateUrl: './chart2.component.html',
+  styleUrl: './chart2.component.scss',
 })
-export class Chart1Component implements OnInit, OnChanges {
+export class Chart2Component implements OnInit, OnChanges {
   // data = [125, 100, 50, 75, 200, 60, 300];
   @Input() data;
-
-  xlabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
   rectWidth = 80;
   max = 150;
@@ -51,11 +49,6 @@ export class Chart1Component implements OnInit, OnChanges {
     this.dimensions = svg.getBoundingClientRect();
     this.innerWidth = this.dimensions.width - this.left - this.right;
     this.innerHeight = this.dimensions.height - this.top - this.bottom;
-    // this.rectWidth =
-    //   (this.innerWidth - 2 * this.outerPadding) / this.data.length;
-    // this.bandwidth = this.bandwidthCoef * this.rectWidth;
-    // this.padding = (1 - this.bandwidthCoef) * this.rectWidth;
-    // this.max = 1.3 * Math.max(...this.data); //1.3 = 130% so wont really hit the max
     this.setParams();
   }
 
@@ -65,10 +58,11 @@ export class Chart1Component implements OnInit, OnChanges {
   }
 
   setParams() {
-    this.rectWidth =
-      (this.innerWidth - 2 * this.outerPadding) / this.data.length;
+    const data = this.data || [];
+    console.log('data', data);
+    this.rectWidth = (this.innerWidth - 2 * this.outerPadding) / data.length;
     this.bandwidth = this.bandwidthCoef * this.rectWidth;
     this.padding = (1 - this.bandwidthCoef) * this.rectWidth;
-    this.max = 1.3 * Math.max(...this.data); //1.3 = 130% so wont really hit the max
+    this.max = 1.3 * Math.max(...data.map((item) => item.employee_age)); //1.3 = 130% so wont really hit the max
   }
 }

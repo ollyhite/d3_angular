@@ -9,24 +9,16 @@
   <rect
     *ngFor="let item of data; index as idx"
     [attr.x]="idx * rectWidth + 0.5 * padding + outerPadding"
-    [attr.y]="top + innerHeight - (innerHeight / max) * item"
+    [attr.y]="top + innerHeight - (innerHeight / max) * item.employee_age"
     [attr.width]="bandwidth"
-    [attr.height]="(innerHeight / max) * item"
+    [attr.height]="(innerHeight / max) * item.employee_age"
   ></rect>
   <text
     class="x-labels"
-    *ngFor="let item of xlabels; index as idx"
+    *ngFor="let item of data; index as idx"
     [attr.y]="dimensions.height - 2"
     [attr.x]="idx * rectWidth + 0.5 * padding + outerPadding + 0.5 * bandwidth"
   >
-    {{ item }}
+    {{ item.id }}
   </text>
 </svg>
-
-<!-- <svg>
-  <rect x="0" y="125" width="50" height="125"></rect>
-  <rect x="50" y="150" width="50" height="100"></rect>
-  <rect x="100" y="200" width="50" height="50"></rect>
-  <rect x="150" y="175" width="50" height="75"></rect>
-  <rect x="250" y="50" width="50" height="200"></rect>
-</svg> -->
