@@ -60,7 +60,7 @@ export class Chart1Component implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes', changes);
+    // console.log('changes', changes);
     this.setParams();
   }
 

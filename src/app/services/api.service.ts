@@ -6,11 +6,12 @@ import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
+// .get<any>('https://dummy.restapiexample.com/api/v1/employees')
 export class ApiService {
   constructor(private http: HttpClient) {}
   getEmployees(): Observable<any> {
     return this.http
-      .get<any>('https://dummy.restapiexample.com/api/v1/employees')
+      .get<any>('assets/employees.json')
       .pipe(map((answer) => answer.data));
   }
 }

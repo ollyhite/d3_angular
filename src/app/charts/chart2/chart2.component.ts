@@ -53,13 +53,13 @@ export class Chart2Component implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes', changes);
+    // console.log('changes', changes);
     this.setParams();
   }
 
   setParams() {
     const data = this.data || [];
-    console.log('data', data);
+    // console.log('data', data);
     this.rectWidth = (this.innerWidth - 2 * this.outerPadding) / data.length;
     this.bandwidth = this.bandwidthCoef * this.rectWidth;
     this.padding = (1 - this.bandwidthCoef) * this.rectWidth;
