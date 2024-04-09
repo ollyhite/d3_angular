@@ -37,6 +37,14 @@ export class Chart3Component implements OnInit, OnChanges {
   x = d3.scaleBand().paddingInner(0.2).paddingOuter(0.2);
   y = d3.scaleLinear();
 
+  sortedBySalary = false;
+
+  get barsData() {
+    return this.sortedBySalary
+      ? this.data.sort((a, b) => +b.employee_salary - +a.employee_salary)
+      : this.data.sort((a, b) => (a.employee_name < b.employee_name ? -1 : 1));
+  }
+
   constructor(private element: ElementRef) {
     this.host = d3.select(element.nativeElement);
 
@@ -46,9 +54,16 @@ export class Chart3Component implements OnInit, OnChanges {
   ngOnInit() {
     //this will select the first svg in the page (chart1) not the right one
     // this.svg = d3.select('svg');
-    this.svg = this.host.select('svg');
+    this.svg = this.host.select('svg').on('click', () => {
+      this.dataChanged();
+    });
     this.setDimensions();
     this.setElements();
+  }
+
+  dataChanged() {
+    this.sortedBySalary = !this.sortedBySalary;
+    this.updateChart();
   }
 
   setDimensions() {
@@ -77,6 +92,10 @@ export class Chart3Component implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.svg) return;
+    this.updateChart();
+  }
+
+  updateChart() {
     this.setParams();
     this.setAxis();
     this.setLabels();
@@ -125,21 +144,29 @@ export class Chart3Component implements OnInit, OnChanges {
   getEmployeeName = (id) => this.data.find((d) => d.id === id).employee_name;
 
   setParams() {
-    const ids = this.data.map((d) => d.id);
+    const ids = this.barsData.map((d) => d.id);
     this.x.domain(ids).range([0, this.innerWidth]);
     const max_salary =
       1.3 * Math.max(...this.data.map((item) => item.employee_salary));
     this.y.domain([0, max_salary]).range([this.innerHeight, 0]);
   }
   draw() {
-    this.dataContainer
-      .selectAll('rect')
-      .data(this.data || [])
+    const bars = this.dataContainer.selectAll('rect').data(this.barsData);
+
+    bars
+      .attr('x', (d) => this.x(d.id))
+      .attr('width', this.x.bandwidth())
+      .attr('y', (d) => this.y(d.employee_salary))
+      .attr('height', (d) => this.innerHeight - this.y(d.employee_salary));
+
+    bars
       .enter()
       .append('rect')
       .attr('x', (d) => this.x(d.id))
       .attr('width', this.x.bandwidth())
       .attr('y', (d) => this.y(d.employee_salary))
       .attr('height', (d) => this.innerHeight - this.y(d.employee_salary));
+
+    bars.exit().remove();
   }
 }
