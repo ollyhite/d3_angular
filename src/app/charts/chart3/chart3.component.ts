@@ -27,7 +27,7 @@ export class Chart3Component implements OnInit, OnChanges {
   dimensions: DOMRect;
   left = 60;
   right = 20;
-  bottom = 16;
+  bottom = 80;
   top = 15;
   innerWidth;
   innerHeight;
@@ -79,6 +79,7 @@ export class Chart3Component implements OnInit, OnChanges {
     if (!this.svg) return;
     this.setParams();
     this.setAxis();
+    this.setLabels();
     this.draw();
   }
 
@@ -95,10 +96,33 @@ export class Chart3Component implements OnInit, OnChanges {
       .axisLeft(this.y)
       .tickSizeOuter(0)
       .tickSizeInner(-this.innerWidth)
-      .tickPadding(10)
+      // .tickPadding(10)
       .tickFormat(d3.format('$~s'));
     this.yAxisContainer.call(this.yAxis);
+
+    this.yAxisContainer.selectAll('.tick line').style('stroke', '#ddd');
   }
+
+  setLabels() {
+    this.svg
+      .append('g')
+      .attr('class', 'yAxisLabel')
+      // .attr('y', this.top + 0.5 * this.innerHeight)
+      // .attr('x', 10)
+      .attr('transform', `translate(15,${this.top + 0.5 * this.innerHeight})`)
+      .append('text')
+      .attr('class', 'label')
+      .text('Employee Salary')
+      .attr('transform', `rotate(-90)`)
+      .style('text-anchor', 'middle');
+    this.xAxisContainer
+      .selectAll('.tick text')
+      .text((d) => this.getEmployeeName(d))
+      .attr('transform', 'translate(-9,2)rotate(-45)')
+      .style('text-anchor', 'end');
+  }
+
+  getEmployeeName = (id) => this.data.find((d) => d.id === id).employee_name;
 
   setParams() {
     const ids = this.data.map((d) => d.id);
