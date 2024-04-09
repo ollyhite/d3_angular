@@ -58,10 +58,6 @@ export class Chart3Component implements OnInit, OnChanges {
   }
 
   setElements() {
-    this.dataContainer = this.svg
-      .append('g')
-      .attr('class', 'dataContainer')
-      .attr('transform', `translate(${this.left},${this.top})`);
     this.xAxisContainer = this.svg
       .append('g')
       .attr('class', 'xAxisContainer')
@@ -73,6 +69,10 @@ export class Chart3Component implements OnInit, OnChanges {
       .append('g')
       .attr('class', 'yAxisContainer')
       .attr('transform', `translate(${this.left},${this.top})`);
+    this.dataContainer = this.svg
+      .append('g')
+      .attr('class', 'dataContainer')
+      .attr('transform', `translate(${this.left},${this.top})`);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -83,10 +83,20 @@ export class Chart3Component implements OnInit, OnChanges {
   }
 
   setAxis() {
-    this.xAxis = d3.axisBottom(this.x);
+    this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0);
     this.xAxisContainer.call(this.xAxis);
-
-    this.yAxis = d3.axisLeft(this.y);
+    //.ticks(10) id default
+    // this.yAxis = d3.axisLeft(this.y).ticks(10);
+    // const max = this.y.domain()[1];
+    // const values = [0, 0.25, 0.5, 0.75, 1].map((d) => d * max);
+    // this.yAxis = d3.axisLeft(this.y).tickValues(values);
+    // this.yAxis = d3.axisLeft(this.y).tickSize(-this.innerWidth);
+    this.yAxis = d3
+      .axisLeft(this.y)
+      .tickSizeOuter(0)
+      .tickSizeInner(-this.innerWidth)
+      .tickPadding(10)
+      .tickFormat(d3.format('$~s'));
     this.yAxisContainer.call(this.yAxis);
   }
 
