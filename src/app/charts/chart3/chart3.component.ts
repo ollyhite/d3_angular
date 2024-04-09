@@ -119,11 +119,11 @@ export class Chart3Component implements OnInit, OnChanges {
     const updateXAxis = (xAxisContainer) => {
       xAxisContainer.call(this.xAxis);
 
-      this.xAxisContainer
+      xAxisContainer
         .selectAll('.tick text')
         .attr('transform', 'translate(-10,2)rotate(-45)')
         .style('text-anchor', 'end')
-        .text((d) => this.getEmployeeName(d));
+        .text(this.getEmployeeName);
     };
 
     this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0);
