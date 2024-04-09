@@ -21,6 +21,7 @@ export class Chart3Component implements OnInit, OnChanges {
   dataContainer: any;
   xAxisContainer: any;
   yAxisContainer: any;
+  textLabel: any;
   @Input() data;
   rectWidth = 30;
   padding = 3;
@@ -28,7 +29,7 @@ export class Chart3Component implements OnInit, OnChanges {
   left = 60;
   right = 20;
   bottom = 80;
-  top = 15;
+  top = 35;
   innerWidth;
   innerHeight;
   xAxis: any;
@@ -88,6 +89,18 @@ export class Chart3Component implements OnInit, OnChanges {
       .append('g')
       .attr('class', 'dataContainer')
       .attr('transform', `translate(${this.left},${this.top})`);
+
+    this.textLabel = this.svg
+      .append('g')
+      .attr('class', 'yAxisLabel')
+      // .attr('y', this.top + 0.5 * this.innerHeight)
+      // .attr('x', 10)
+      .attr('transform', `translate(${0.5 * this.dimensions.width} 20)`)
+      .append('text')
+      .attr('class', 'label')
+      // .attr('transform', `rotate(-90)`)
+      .style('text-anchor', 'middle')
+      .style('font-weight', 'bold');
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -103,8 +116,19 @@ export class Chart3Component implements OnInit, OnChanges {
   }
 
   setAxis() {
+    const updateXAxis = (xAxisContainer) => {
+      xAxisContainer.call(this.xAxis);
+
+      this.xAxisContainer
+        .selectAll('.tick text')
+        .attr('transform', 'translate(-10,2)rotate(-45)')
+        .style('text-anchor', 'end')
+        .text((d) => this.getEmployeeName(d));
+    };
+
     this.xAxis = d3.axisBottom(this.x).tickSizeOuter(0);
-    this.xAxisContainer.call(this.xAxis);
+    this.xAxisContainer.transition().duration(500).call(updateXAxis);
+    // this.xAxisContainer.call(this.xAxis);
     //.ticks(10) id default
     // this.yAxis = d3.axisLeft(this.y).ticks(10);
     // const max = this.y.domain()[1];
@@ -123,22 +147,7 @@ export class Chart3Component implements OnInit, OnChanges {
   }
 
   setLabels() {
-    this.svg
-      .append('g')
-      .attr('class', 'yAxisLabel')
-      // .attr('y', this.top + 0.5 * this.innerHeight)
-      // .attr('x', 10)
-      .attr('transform', `translate(15,${this.top + 0.5 * this.innerHeight})`)
-      .append('text')
-      .attr('class', 'label')
-      .text('Employee Salary')
-      .attr('transform', `rotate(-90)`)
-      .style('text-anchor', 'middle');
-    this.xAxisContainer
-      .selectAll('.tick text')
-      .text((d) => this.getEmployeeName(d))
-      .attr('transform', 'translate(-9,2)rotate(-45)')
-      .style('text-anchor', 'end');
+    this.textLabel.text('Employee Salary');
   }
 
   getEmployeeName = (id) => this.data.find((d) => d.id === id).employee_name;
@@ -151,17 +160,23 @@ export class Chart3Component implements OnInit, OnChanges {
     this.y.domain([0, max_salary]).range([this.innerHeight, 0]);
   }
   draw() {
-    const bars = this.dataContainer.selectAll('rect').data(this.barsData);
+    const bars = this.dataContainer
+      .selectAll('rect')
+      .data(this.barsData || [], (d) => d.id);
+    // .data(this.barsData || []);
 
-    bars
-      .attr('x', (d) => this.x(d.id))
-      .attr('width', this.x.bandwidth())
-      .attr('y', (d) => this.y(d.employee_salary))
-      .attr('height', (d) => this.innerHeight - this.y(d.employee_salary));
+    // bars
+    //   .attr('x', (d) => this.x(d.id))
+    //   .attr('width', this.x.bandwidth())
+    //   .attr('y', (d) => this.y(d.employee_salary))
+    //   .attr('height', (d) => this.innerHeight - this.y(d.employee_salary));
 
     bars
       .enter()
       .append('rect')
+      .merge(bars)
+      .transition()
+      .duration(500)
       .attr('x', (d) => this.x(d.id))
       .attr('width', this.x.bandwidth())
       .attr('y', (d) => this.y(d.employee_salary))
